@@ -1,11 +1,63 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit , ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms'; // 1. Import it
+
+
+
 
 @Component({
-  imports: [],
   selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
-export class App {
-  protected readonly title = signal('xml-events-app');
+
+
+export class App implements OnInit {
+  //eventData: { Id: string; Name: string; Description: string } | null = null;
+  eventData: any[] = [];
+  errorMessage: string = '';
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) { }
+
+
+  ngOnInit() {
+    this.http.get('/api', { responseType: 'text' })
+      .subscribe({
+        next: (xmlString) => { this.parseXml(xmlString); },
+        error: (err) => {
+          this.errorMessage = 'Failed to load event data.';
+          console.error(err);
+        }
+      });
+  }
+  private parseXml(xmlString: string) {
+    try {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlString, 'text/xml');
+
+      // 2. Find all parent elements (e.g., assuming your tags are wrapped in <Event>)
+      const eventNodes = xmlDoc.getElementsByTagName('Event');
+      const parsedEvents = [];
+
+      // 3. Loop through each event node and extract data
+      for (let i = 0; i < eventNodes.length; i++) {
+        const node = eventNodes[i];
+        parsedEvents.push({
+          Id: node.getElementsByTagName('Id')[0]?.textContent || '',
+          Name: node.getElementsByTagName('Name')[0]?.textContent || '',
+          Description: node.getElementsByTagName('Description')[0]?.textContent || ''
+        });
+      }
+
+      // 4. Assign the completed array and trigger change detection
+      this.eventData = parsedEvents;
+      this.cdr.detectChanges();
+
+    } catch (error) {
+      this.errorMessage = 'Failed to parse XML data.';
+      console.error(error);
+    }
+  }
 }

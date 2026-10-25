@@ -1,0 +1,10 @@
+{
+  "/xml-data": {
+    "target": "https://community.rotman.utoronto.ca",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/xml-data": ""
+    }
+  }
+}
