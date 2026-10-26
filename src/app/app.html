@@ -1,10 +1,148 @@
+<style>
+  /* Base table styling */
+  .dynamic-table {
+    width: 80%;
+    border-collapse: collapse; /* Prevents double borders */
+    font-family: sans-serif;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+  }
+
+    /* 1px border alternative to border="1" */
+    .dynamic-table th,
+    .dynamic-table td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+
+    /* Header styling */
+    .dynamic-table th {
+      background-color: #f4f4f4;
+      color: #333;
+    }
+
+    /* Zebra striping alternative to tr bgcolor */
+    .dynamic-table tr:nth-child(even) {
+      background-color: #DDDDDD;
+    }
+
+    /* Optional: Highlight row on hover for better readability */
+    .dynamic-table tr:hover {
+      background-color: #f1f1f1;
+    }
+  .count {
+    background-color: #3498db;
+    width: 200px;
+    height: 60px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+    color: white;
+    border-radius: 5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+    font-size: 30px; /* Adjust font size to your liking */
+    font-weight: bold;
+  }
+  .search-container {
+    width: 80%;
+    display: block; /* or display: flex; with flex-grow */
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+  }
+
+    .search-container input {
+      width: 100%;
+      min-height: 40px;
+      max-height: 150px;
+      resize: vertical; /* Allows user to resize vertically */
+      box-sizing: border-box;
+      padding: 8px;
+      font-family: inherit;
+      font-size: 16px;
+      line-height: 1.4;
+      background-color: #f0f0f0;
+      border-style: solid;
+      border-color: #3498db;
+    }
+  .thumbnail-container {
+    width: 130px;
+    height: 100px;
+    overflow: hidden; /* Prevents larger images from spilling out */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+    /* Optional: Ensures images inside the container fit perfectly */
+    .thumbnail-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Crops the image perfectly without stretching it */
+    }
+</style>
+
 <div *ngIf="errorMessage">{{ errorMessage }}</div>
 
-<div *ngFor="let event of eventData">
-  <h3>{{ event.Name }} (ID: {{ event.Id }})</h3>
-  <p>{{ event.Description }}</p>
+<!-- 1. Search Bar Input -->
+<div class="search-container">
+  <input type="text"
+         [(ngModel)]="searchQuery"
+         (input)="applyFilter()"
+         placeholder="Search events by name, topics, publish type, or description..."
+         class="search-input" />
 </div>
+<div class="count">
+  <span style="font-size:16px;"> Total event count:</span>  {{ totalCount }}
+</div>
+  <table class="dynamic-table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Event Thumbnail</th>
+        <th>ID</th>
+        <th>PublishType</th>
+        <th>Topics</th>
 
+        <th>Description</th>
+      </tr>
+    </thead>
+
+
+
+    <tr *ngFor="let event of eventData">
+      <td>
+        <h3>{{ event.Name }} </h3>
+      </td>
+      <td>
+
+        <div class="thumbnail-container">
+          <img src="{{event.EvdTentImage}}" alt="Event Thumbnail" class="thumbnail-img">
+        </div>
+        
+
+      </td>
+      <td>
+        (ID: {{ event.Id }})
+      </td>
+      <td>
+        {{ event.PublishType }}
+      </td>
+      <td>
+        {{ event.Topics }}
+      </td>
+
+      <td>
+        {{ event.Description }}
+      </td>
+    </tr>
+
+  </table>
 
 
 
